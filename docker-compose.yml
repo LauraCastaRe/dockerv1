@@ -1,0 +1,26 @@
+services:
+  home:
+    build:
+      context: ./home
+    ports:
+      - "5002:5002"
+    environment:
+      - FLASK_APP=home.py
+    networks:
+      - flask-network
+
+  logeo:
+    build: 
+      context: ./logeo
+    ports:
+      - "5003:5003"
+    environment:
+      - FLASK_APP=registro.py
+    networks:
+      - flask-network
+
+
+
+networks:
+  flask-network:
+    driver: bridge

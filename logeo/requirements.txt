@@ -1,0 +1,7 @@
+Flask
+flask-mysqldb
+requests
+Flask
+Flask-CORS
+blueprint
+
