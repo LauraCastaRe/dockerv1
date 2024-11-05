@@ -15,5 +15,17 @@ def vendedor():
     # Pasa la variable user a la plantilla
     return render_template('vendedor.html', user=user)   
 
+#pagina de registar los productoss
+@app.route('/RegistraProductos')
+def producto():
+    user = ['nombre_usuario', 'Nombre Completo del Usuario', 'd', 'd', 'd', 'd']
+    return render_template('/vendedor/registroProducto.html',user=user)
+
+@app.route('/listaProducto')
+def listaProducto():
+    user = ['nombre_usuario', 'Nombre Completo del Usuario', 'd', 'd', 'd', 'd']
+    data = ['nombre_usuario', 'Nombre Completo del Usuario', 'd', 'd', 'd', 'd']
+    return render_template('/vendedor/crud_producto.html', produ=data,user=user)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

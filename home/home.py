@@ -5,7 +5,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Ruta principal
-@app.route('/')
+@app.route('/CULTIVARED')
 def index():
     return render_template('inicio.html')
 
