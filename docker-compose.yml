@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   home:
     build:
@@ -5,9 +7,11 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - FLASK_APP=home.py
+      - FLASK_APP=home:app
+      - PYTHONPATH=/app
     networks:
       - flask-network
+    command: flask run --host=0.0.0.0 --port=5002
 
   logeo:
     build: 
@@ -15,11 +19,11 @@ services:
     ports:
       - "5003:5003"
     environment:
-      - FLASK_APP=registro.py
+      - FLASK_APP=registro:app
+      - PYTHONPATH=/app
     networks:
       - flask-network
-
-
+    command: flask run --host=0.0.0.0 --port=5003
 
 networks:
   flask-network:

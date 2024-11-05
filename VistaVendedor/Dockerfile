@@ -6,4 +6,4 @@ WORKDIR /usr/src/app
 
 RUN pip install -r requirements.txt
 
-CMD ["python3", "home.py", "--host", "0.0.0.0"]
+CMD ["python3", "vendedor.py", "--host", "0.0.0.0"]
