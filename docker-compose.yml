@@ -7,10 +7,12 @@ services:
       - "5001:5000"
     volumes:
       - ./home:/usr/src/app
+    env_file:
+      - ./database_postgresql/inicio.env
     environment:
       - FLASK_ENV=development
     depends_on:
-      - db
+      - db_inicio
 
   vendedor:
     build: ./VistaVendedor
@@ -18,10 +20,12 @@ services:
       - "5002:5000"
     volumes:
       - ./VistaVendedor:/usr/src/app
+    env_file:
+      - ./database_postgresql/vendedor.env
     environment:
       - FLASK_ENV=development
     depends_on:
-      - db
+      - db_vendedor
 
   comprador:
     build: ./VistaComprador
@@ -29,10 +33,12 @@ services:
       - "5003:5000"
     volumes:
       - ./VistaComprador:/usr/src/app
+    env_file:
+      - ./database_postgresql/comprador.env
     environment:
       - FLASK_ENV=development
     depends_on:
-      - db
+      - db_comprador
 
   admin:
     build: ./VistaAdministrador
@@ -40,21 +46,54 @@ services:
       - "5004:5000"
     volumes:
       - ./VistaAdministrador:/usr/src/app
+    env_file:
+      - ./database_postgresql/admin.env
     environment:
       - FLASK_ENV=development
     depends_on:
-      - db
+      - db_admin
 
-  db:
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=mi_base_de_datos
-    ports:
-      - "5432:5432"
+  db_inicio:
+    image: postgres:latest
+    env_file:
+      - ./database_postgresql/inicio.env
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - inicio_data:/var/lib/postgresql/data
+      - ./database_postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      
+  db_comprador:
+    image: postgres:latest
+    env_file:
+      - ./database_postgresql/comprador.env
+    volumes:
+      - comprador_data:/var/lib/postgresql/data
+
+  db_vendedor:
+    image: postgres:latest
+    env_file:
+      - ./database_postgresql/vendedor.env
+    volumes:
+      - vendedor_data:/var/lib/postgresql/data
+
+  db_admin:
+    image: postgres:latest
+    env_file:
+      - ./database_postgresql/admin.env
+    volumes:
+      - admin_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db_inicio
 
 volumes:
-  postgres_data:
+    inicio_data:
+    admin_data:
+    comprador_data:
+    vendedor_data:

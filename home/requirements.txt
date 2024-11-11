@@ -3,3 +3,5 @@ flask-mysqldb
 requests
 Flask-CORS
 blueprint
+Flask-SQLAlchemy
+psycopg2
