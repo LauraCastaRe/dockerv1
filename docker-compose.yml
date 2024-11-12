@@ -1,60 +1,106 @@
 version: '3'
 
 services:
-  inicio:
+
+  database_home:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: home_user
+      POSTGRES_PASSWORD: home_password
+      POSTGRES_DB: home_database
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_home_data:/var/lib/postgresql/data
+      - ./home/init_db:/docker-entrypoint-initdb.d
+
+  database_admin:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: admin_database
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_admin_data:/var/lib/postgresql/data
+      - ./VistaAdministrador/init_db:/docker-entrypoint-initdb.d
+
+  database_comprador:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: comprador_user
+      POSTGRES_PASSWORD: comprador_password
+      POSTGRES_DB: comprador_database
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_comprador_data:/var/lib/postgresql/data
+      - ./VistaComprador/init_db:/docker-entrypoint-initdb.d
+
+  database_vendedor:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: vendedor_user
+      POSTGRES_PASSWORD: vendedor_password
+      POSTGRES_DB: vendedor_database
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_vendedor_data:/var/lib/postgresql/data
+      - ./VistaVendedor/init_db:/docker-entrypoint-initdb.d
+
+  home:
     build: ./home
     ports:
-      - "5001:5000"
-    volumes:
-      - ./home:/usr/src/app
+      - "5000:5000"
     environment:
-      - FLASK_ENV=development
+      DATABASE_URL: postgres://home_user:home_password@database_home:5432/home_database
     depends_on:
-      - db
+      - database_home
 
-  vendedor:
-    build: ./VistaVendedor
-    ports:
-      - "5002:5000"
-    volumes:
-      - ./VistaVendedor:/usr/src/app
+  # VistaAdministrador:
+  #   build: ./VistaAdministrador
+  #   ports:
+  #     - "5001:5000"
+  #   environment:
+  #     DATABASE_URL: postgres://admin_user:admin_password@database_admin:5432/admin_database
+  #   depends_on:
+  #     - database_admin
+
+  # VistaComprador:
+  #   build: ./VistaComprador
+  #   ports:
+  #     - "5002:5000"
+  #   environment:
+  #     DATABASE_URL: postgres://comprador_user:comprador_password@database_comprador:5432/comprador_database
+  #   depends_on:
+  #     - database_comprador
+
+  # VistaVendedor:
+  #   build: ./VistaVendedor
+  #   ports:
+  #     - "5003:5000"
+  #   environment:
+  #     DATABASE_URL: postgres://vendedor_user:vendedor_password@database_vendedor:5432/vendedor_database
+  #   depends_on:
+  #     - database_vendedor
+
+  pgadmin:
+    image: dpage/pgadmin4
     environment:
-      - FLASK_ENV=development
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
     depends_on:
-      - db
-
-  comprador:
-    build: ./VistaComprador
-    ports:
-      - "5003:5000"
-    volumes:
-      - ./VistaComprador:/usr/src/app
-    environment:
-      - FLASK_ENV=development
-    depends_on:
-      - db
-
-  admin:
-    build: ./VistaAdministrador
-    ports:
-      - "5004:5000"
-    volumes:
-      - ./VistaAdministrador:/usr/src/app
-    environment:
-      - FLASK_ENV=development
-    depends_on:
-      - db
-
-  db:
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=mi_base_de_datos
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
+      - database_home
+      - database_admin
+      - database_comprador
+      - database_vendedor
+  
 volumes:
-  postgres_data:
+  postgres_home_data:
+  postgres_admin_data:
+  postgres_comprador_data:
+  postgres_vendedor_data:
