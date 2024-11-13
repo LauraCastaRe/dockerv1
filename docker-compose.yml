@@ -1,63 +1,38 @@
-version: '3'
-
 services:
-
-  database_home:
-    image: postgres:latest
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
     environment:
-      POSTGRES_USER: home_user
-      POSTGRES_PASSWORD: home_password
-      POSTGRES_DB: home_database
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: root
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres_home_data:/var/lib/postgresql/data
-      - ./home/init_db:/docker-entrypoint-initdb.d
+      - "5432:5432"
 
-  database_admin:
-    image: postgres:latest
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
     environment:
-      POSTGRES_USER: admin_user
-      POSTGRES_PASSWORD: admin_password
-      POSTGRES_DB: admin_database
+      PGADMIN_DEFAULT_EMAIL: admin@admin.dev
+      PGADMIN_DEFAULT_PASSWORD: 1234
     ports:
-      - "5434:5432"
-    volumes:
-      - postgres_admin_data:/var/lib/postgresql/data
-      - ./VistaAdministrador/init_db:/docker-entrypoint-initdb.d
-
-  database_comprador:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: comprador_user
-      POSTGRES_PASSWORD: comprador_password
-      POSTGRES_DB: comprador_database
-    ports:
-      - "5435:5432"
-    volumes:
-      - postgres_comprador_data:/var/lib/postgresql/data
-      - ./VistaComprador/init_db:/docker-entrypoint-initdb.d
-
-  database_vendedor:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: vendedor_user
-      POSTGRES_PASSWORD: vendedor_password
-      POSTGRES_DB: vendedor_database
-    ports:
-      - "5436:5432"
-    volumes:
-      - postgres_vendedor_data:/var/lib/postgresql/data
-      - ./VistaVendedor/init_db:/docker-entrypoint-initdb.d
+      - "5050:80"
+    depends_on:
+      - postgres
 
   home:
     build: ./home
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgres://home_user:home_password@database_home:5432/home_database
+      FLASK_APP: home.py
+      FLASK_RUN_HOST: 0.0.0.0
+      DATABASE_URL: postgresql://root:root@postgres:5432/root
     depends_on:
-      - database_home
+      - postgres
+
 
   # VistaAdministrador:
   #   build: ./VistaAdministrador
@@ -86,21 +61,4 @@ services:
   #   depends_on:
   #     - database_vendedor
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - database_home
-      - database_admin
-      - database_comprador
-      - database_vendedor
   
-volumes:
-  postgres_home_data:
-  postgres_admin_data:
-  postgres_comprador_data:
-  postgres_vendedor_data:
